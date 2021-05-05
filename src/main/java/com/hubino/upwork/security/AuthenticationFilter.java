@@ -1,7 +1,6 @@
 package com.hubino.upwork.security;
 
 import java.io.IOException;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -25,40 +24,38 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-	@Value("jwt.secret")
-	private String KEY;
-    private AuthenticationManager authenticationManager;
+	@Value("${jwt.secret}")
+	private String KEY = "tjhlw9z$C&F)J@NcQfTjWnZr4u7x!A%D*G-KaPdSgUkXp2jlhg/B?E(H+Mbkgic";
+	private AuthenticationManager authenticationManager;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+	public AuthenticationFilter(AuthenticationManager authenticationManager) {
+		this.authenticationManager = authenticationManager;
+	}
 
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest req,
-                                                HttpServletResponse res) throws AuthenticationException {
-        try {
-            ApplicationUser applicationUser = new ObjectMapper().readValue(req.getInputStream(), ApplicationUser.class);
+	@Override
+	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
+			throws AuthenticationException {
+		try {
+			ApplicationUser user = new ObjectMapper().readValue(req.getInputStream(), ApplicationUser.class);
 
-            return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(applicationUser.getEmail(),
-                            applicationUser.getPassword(), new ArrayList<>())
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			return authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), new ArrayList<>()));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    @Override
-    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
-                                            Authentication auth) throws IOException, ServletException {
+	@Override
+	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
+			Authentication auth) throws IOException, ServletException {
 
-        Date exp = new Date(System.currentTimeMillis() + 1000L*60*30);
-        Claims claims = Jwts.claims().setSubject(((User) auth.getPrincipal()).getUsername());
-        String token = Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, KEY).setExpiration(exp).compact();
-        res.addHeader("token", token);
+		Date exp = new Date(System.currentTimeMillis() + 1000L * 60 * 30);
 
+		Claims claims = Jwts.claims().setSubject(((User) auth.getPrincipal()).getUsername());
+		String token = Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, KEY).setExpiration(exp)
+				.compact();
+		res.addHeader("token", token);
 
-    }
+	}
 }
