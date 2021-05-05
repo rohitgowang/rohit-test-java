@@ -1,4 +1,4 @@
-package com.hubino.upwork.dao;
+package com.hubino.upwork.repository;
 
 
 import java.util.List;

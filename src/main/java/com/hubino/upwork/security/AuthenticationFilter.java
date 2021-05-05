@@ -40,7 +40,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 			ApplicationUser user = new ObjectMapper().readValue(req.getInputStream(), ApplicationUser.class);
 
 			return authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), new ArrayList<>()));
+					new UsernamePasswordAuthenticationToken(user.getEmailId(), user.getPassword(), new ArrayList<>()));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

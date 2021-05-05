@@ -6,14 +6,18 @@ public class ApplicationUser {
 
 	@Id
 	public String id;
-	public String username;
+	public String emailId;
+	public long mobile;
 	public String password;
 
 	public ApplicationUser() {
+		super();
 	}
 
-	public ApplicationUser(String email, String password) {
-		this.username = email;
+	public ApplicationUser(String emailId, long mobile, String password) {
+		super();
+		this.emailId = emailId;
+		this.mobile = mobile;
 		this.password = password;
 	}
 
@@ -25,12 +29,20 @@ public class ApplicationUser {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getEmailId() {
+		return emailId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
+
+	public long getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(long mobile) {
+		this.mobile = mobile;
 	}
 
 	public String getPassword() {
@@ -43,7 +55,8 @@ public class ApplicationUser {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + "]";
+		return "ApplicationUser [id=" + id + ", emailId=" + emailId + ", mobile=" + mobile + ", password=" + password
+				+ "]";
 	}
 
 }

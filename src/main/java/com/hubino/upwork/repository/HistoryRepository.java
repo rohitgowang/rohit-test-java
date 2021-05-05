@@ -1,4 +1,4 @@
-package com.hubino.upwork.dao;
+package com.hubino.upwork.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

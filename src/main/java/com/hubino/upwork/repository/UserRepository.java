@@ -1,4 +1,4 @@
-package com.hubino.upwork.dao;
+package com.hubino.upwork.repository;
 
 import java.util.Optional;
 
@@ -8,7 +8,9 @@ import com.hubino.upwork.entity.ApplicationUser;
 
 public interface UserRepository extends MongoRepository<ApplicationUser, String> {
 
-	public ApplicationUser findByUsername(String username);
+	public ApplicationUser findByEmailId(String emailId);
+
+	public ApplicationUser findByMobile(long mobile);
 
 	public Optional<ApplicationUser> findById(String Id);
 }
