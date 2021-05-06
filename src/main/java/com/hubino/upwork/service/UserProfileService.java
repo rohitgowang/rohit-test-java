@@ -25,8 +25,13 @@ public class UserProfileService {
 		return profileRepository.findByEmailId(email);
 	}
 
+// updating the profile while checking if the profile exists or not if not then return null.
 	public UserProfile updateProfile(UserProfile profile) {
-		UserProfile savedProfile = profileRepository.save(profile);
-		return savedProfile;
+		UserProfile profile1 = profileRepository.findByUser(profile.getUser());
+		if (profile1 != null) {
+			UserProfile savedProfile = profileRepository.save(profile);
+			return savedProfile;
+		}
+		return null;
 	}
 }
