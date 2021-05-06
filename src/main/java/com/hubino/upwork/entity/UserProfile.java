@@ -14,20 +14,20 @@ public class UserProfile {
 	public String firstName;
 	public String lastName;
 	public String emailId;
-	public long mobile;
+	public String address;
 	public List<History> historyList;
 
 	public UserProfile() {
 	}
 
-	public UserProfile(ApplicationUser user, String firstName, String lastName, String emailId, long mobile,
+	public UserProfile(ApplicationUser user, String firstName, String lastName, String emailId, String address,
 			List<History> historyList) {
 		this.user = user;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.historyList = historyList;
 		this.emailId = emailId;
-		this.mobile = mobile;
+		this.address = address;
 	}
 
 	public String getEmailId() {
@@ -38,12 +38,12 @@ public class UserProfile {
 		this.emailId = emailId;
 	}
 
-	public long getMobile() {
-		return mobile;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setMobile(long mobile) {
-		this.mobile = mobile;
+	public void setMobile(String address) {
+		this.address = address;
 	}
 
 	public String getId() {

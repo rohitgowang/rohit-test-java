@@ -48,6 +48,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 			Claims user = Jwts.parser().setSigningKey(KEY).parseClaimsJws(token).getBody();
 
 			if (user != null) {
+				request.setAttribute("emailId", user.getSubject());
 				return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
 			} else {
 				return null;

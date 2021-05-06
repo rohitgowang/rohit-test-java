@@ -5,9 +5,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hubino.upwork.entity.Bus;
@@ -23,25 +24,35 @@ public class BusController {
 	private static final Logger logger = LoggerFactory.getLogger(BusController.class);
 
 	@RequestMapping("/getBuses")
-	public @ResponseBody List<Bus> getAvailableBuses() {
-		return busService.getAvailableBuses();
+	public ResponseEntity<Object> getAvailableBuses() {
+
+		List<Bus> buses = busService.getAvailableBuses();
+		if (buses != null) {
+			return new ResponseEntity<>(buses, HttpStatus.FOUND);
+		}
+		logger.error("No available bus found for this route");
+		return new ResponseEntity<>("No available bus found", HttpStatus.NOT_FOUND);
 	}
 
 	@RequestMapping("/addBus")
-	public void addBus(@RequestBody Bus bus) {
+	public ResponseEntity<Object> addBus(@RequestBody Bus bus) {
 
 		logger.info("#########Request add a new Bus with details:- " + bus.toString());
 
-		busService.addBus(bus);
+		Bus savedBus = busService.addBus(bus);
+		if (savedBus != null) {
+			logger.info("Bus added Successfully with id:- " + savedBus.getId());
+			return new ResponseEntity<>(savedBus, HttpStatus.CREATED);
+		}
+		logger.error("error while saving bus.");
+		return new ResponseEntity<>("Unable to add new bus", HttpStatus.NOT_ACCEPTABLE);
 
 	}
 
 	@RequestMapping("/bookBus")
-	public String bookBus(@RequestBody BookingPayload bookPayload) {
+	public ResponseEntity<Object> bookBus(@RequestBody BookingPayload bookPayload) {
 		logger.info("#########Request to book a Bus with details:- " + bookPayload.toString());
 
-		busService.uploadBookingDetails(bookPayload);
-
-		return "Booking Successfully Completed";
+		return busService.uploadBookingDetails(bookPayload);
 	}
 }

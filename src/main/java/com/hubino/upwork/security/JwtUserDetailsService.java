@@ -2,6 +2,8 @@ package com.hubino.upwork.security;
 
 import static java.util.Collections.emptyList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,18 +23,23 @@ public class JwtUserDetailsService implements UserDetailsService {
 	@Autowired
 	private ProfileRepository profileRepository;
 
+	private static final Logger logger = LoggerFactory.getLogger(JwtUserDetailsService.class);
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		System.out.println("username:- " + username);
 		ApplicationUser applicationUser = userRepository.findByEmailId(username);
 
-		System.out.println("user----" + applicationUser);
 		if (applicationUser == null) {
 			applicationUser = userRepository.findByMobile(Long.valueOf(username));
-			if (applicationUser == null)
-				throw new UsernameNotFoundException(username);
+			if (applicationUser == null) {
+				logger.error("No USER found with the credentials entered.");
+			} else {
+				return new User(Long.toString(applicationUser.getMobile()), applicationUser.getPassword(), emptyList());
+			}
 		}
+
+		logger.info("User Details are:- " + applicationUser.getEmailId() + " " + applicationUser.getMobile());
 		return new User(applicationUser.getEmailId(), applicationUser.getPassword(), emptyList());
 	}
 }

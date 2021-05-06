@@ -7,7 +7,10 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hubino.upwork.entity.ApplicationUser;
 import com.hubino.upwork.entity.Bus;
@@ -40,31 +43,38 @@ public class BusService {
 		return busRepository.findByAvailability(true);
 	}
 
-	public void addBus(Bus bus) {
-		busRepository.save(bus);
-		logger.info("Bus added Successfully with id:- " + bus.getId());
+	public Bus addBus(Bus bus) {
+		Bus savedBus = busRepository.save(bus);
+		return savedBus;
 	}
 
-	public void uploadBookingDetails(BookingPayload bookPayload) {
-		Optional<ApplicationUser> user = userRepository.findById(bookPayload.getUserId());
-		Optional<Bus> optionalBus = busRepository.findById(bookPayload.getBusId());
-		Bus bus = optionalBus.get();
-		bus.setNoOfSeatsAvailable(bus.getNoOfSeatsAvailable() - bookPayload.getNoOfSeats());
-		logger.info("updating no. of seats in the bus by " + bookPayload.getNoOfSeats());
-		UserProfile profile = profileRepository.findByUser(user.get());
-		History history = new History(bookPayload.getUserId(), bookPayload.getBusId(), bookPayload.getNoOfSeats(),
-				bookPayload.getTicketPrice());
-		if (profile.getHistoryList() != null)
-			profile.getHistoryList().add(history);
-		else {
-			List<History> historyList = new ArrayList<History>();
-			historyList.add(history);
-			profile.setHistoryList(historyList);
+	@Transactional
+	public ResponseEntity<Object> uploadBookingDetails(BookingPayload bookPayload) {
+		try {
+			Optional<ApplicationUser> user = userRepository.findById(bookPayload.getUserId());
+			Optional<Bus> optionalBus = busRepository.findById(bookPayload.getBusId());
+			Bus bus = optionalBus.get();
+			bus.setNoOfSeatsAvailable(bus.getNoOfSeatsAvailable() - bookPayload.getNoOfSeats());
+			logger.info("updating no. of seats in the bus by " + bookPayload.getNoOfSeats());
+			UserProfile profile = profileRepository.findByUser(user.get());
+			History history = new History(bookPayload.getUserId(), bookPayload.getBusId(), bookPayload.getNoOfSeats(),
+					bookPayload.getTicketPrice());
+			if (profile.getHistoryList() != null)
+				profile.getHistoryList().add(history);
+			else {
+				List<History> historyList = new ArrayList<History>();
+				historyList.add(history);
+				profile.setHistoryList(historyList);
+			}
+			logger.info("updating History document with new Booking:- " + history.toString());
+			historyRepository.save(history);
+			profileRepository.save(profile);
+			busRepository.save(bus);
+			logger.info("Booking Added Successfully with id:- " + profile.getId());
+			return new ResponseEntity<>(history, HttpStatus.ACCEPTED);
+		} catch (Exception ex) {
+			logger.error("Exception happens while upload booking:- " + ex);
+			return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
 		}
-		logger.info("updating History document with new Booking:- " + history.toString());
-		historyRepository.save(history);
-		profileRepository.save(profile);
-		busRepository.save(bus);
-		logger.info("Booking Added Successfully with id:- " + profile.getId());
 	}
 }

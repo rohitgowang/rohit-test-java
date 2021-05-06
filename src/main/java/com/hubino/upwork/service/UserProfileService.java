@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hubino.upwork.entity.ApplicationUser;
 import com.hubino.upwork.entity.UserProfile;
 import com.hubino.upwork.repository.ProfileRepository;
 
@@ -17,17 +16,17 @@ public class UserProfileService {
 	@Autowired
 	ProfileRepository profileRepository;
 
-	public void save(UserProfile profile) {
-		profileRepository.save(profile);
-		logger.info("Saved Profile Successfully with id:- " + profile.getId());
+	public UserProfile save(UserProfile profile) {
+		UserProfile savedProfile = profileRepository.save(profile);
+		return savedProfile;
 	}
 
-	public UserProfile findByUser(ApplicationUser user) {
-		return profileRepository.findByUser(user);
+	public UserProfile findByEmailId(String email) {
+		return profileRepository.findByEmailId(email);
 	}
 
-	public void updateProfile(UserProfile profile) {
-		profileRepository.save(profile);
-		logger.info("Updated Profile Succefully");
+	public UserProfile updateProfile(UserProfile profile) {
+		UserProfile savedProfile = profileRepository.save(profile);
+		return savedProfile;
 	}
 }
